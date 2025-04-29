@@ -1,0 +1,40 @@
+name: biblioteca
+recipe: symfony
+config:
+  webroot: public
+  php: 8.2
+  ini:
+    memory_limit: 4096M
+    max_execution_time: 600
+    post_max_size: 2048M
+    php_extensions:
+      - zip
+services:
+  appserver:
+    portforward: true
+    overrides:
+      ports:
+        - '3777:80'
+        - '4777:443'
+  node:
+    type: node:20
+    build:
+      - npm install
+      - gulp
+    globals:
+      gulp-cli: latest
+  database:
+    type: mysql
+    portforward: true
+  phpmyadmin:
+    type: phpmyadmin
+    depends_on:
+      - database
+    portforward: true
+tooling:
+  npm:
+    service: node
+  node:
+    service: node
+  gulp:
+    service: node  
