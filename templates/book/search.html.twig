@@ -3,17 +3,26 @@
 {% block title %}Book search{% endblock %}
 
 {% block body %}
-    <div class="container mt-4">
-        <turbo-frame id="items_frame">
-            <form method="get" action="{{ path('app_book_search') }}">
-                <input type="text"
-                       name="q"
-                       placeholder="Buscar..."
-                       data-controller="search"
-                       data-action="input->search#submit"/>
-            </form>
+    <div class="container mt-4"
+    >
+        <form
+                method="get"
+                action="{{ path('app_book_search') }}"
+                {{ stimulus_controller('search-book') }}
 
-            {% include 'book/searchTable.html.twig' with { books: books } %}
+        >
+            <input type="text"
+                   name="q"
+                   placeholder="Buscar..."
+                    {{ stimulus_action('search-book', 'search') }}/>
+        </form>
+
+        <turbo-frame id="tabla-libros">
+            <div id="items_frame">
+                {% include 'book/searchTable.html.twig' with { books: books } %}
+            </div>
         </turbo-frame>
+
+
     </div>
 {% endblock %}

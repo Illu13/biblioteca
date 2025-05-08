@@ -12,26 +12,35 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\UX\Turbo\TurboBundle;
 
-#[Route('/book')]
-final class BookController extends AbstractController
-{
-    #[Route(name: 'app_book_index', methods: ['GET'])]
-    public function index(BookRepository $bookRepository): Response
+        #[Route('/book')]
+        final class BookController extends AbstractController
+        {
+            #[Route(name: 'app_book_index', methods: ['GET'])]
+            public function index(BookRepository $bookRepository): Response
+            {
+                return $this->render('book/index.html.twig', [
+                    'books' => $bookRepository->findAll(),
+                ]);
+    }
+
+    #[Route('/allbooks', name: 'app_book_get', methods: ['GET'])]
+    public function getBooks(Request $request, BookRepository $repo): Response
     {
-        return $this->render('book/index.html.twig', [
-            'books' => $bookRepository->findAll(),
+        $q = $request->query->get('q', '');
+        $items = $repo->findBySearchTerm($q);
+        return $this->render('book/search.html.twig', [
+            'books' => $items,
         ]);
     }
 
     #[Route('/search', name: 'app_book_search', methods: ['GET'])]
     public function searchBooks(Request $request, BookRepository $repo): Response
     {
-
         $q = $request->query->get('q', '');
         $items = $repo->findBySearchTerm($q);
-
-
-        return $this->render('book/search.html.twig', [
+        $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+        var_dump($items);
+        return $this->render('book/searchTable.html.twig', [
             'books' => $items,
         ]);
     }
