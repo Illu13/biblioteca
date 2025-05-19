@@ -7,15 +7,17 @@
     >
         <form
                 method="get"
-                action="{{ path('app_book_search') }}"
+                action="{{ path('app_book_get') }}"
                 {{ stimulus_controller('search-book') }}
 
         >
             <input type="text"
                    name="q"
                    placeholder="Buscar..."
+                   value="{{ app.request.query.get('q', '') }}"
                     {{ stimulus_action('search-book', 'search') }}/>
         </form>
+
 
         <turbo-frame id="tabla-libros">
             <div id="items_frame">

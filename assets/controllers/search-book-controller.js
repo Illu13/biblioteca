@@ -7,11 +7,15 @@ import { Controller } from '@hotwired/stimulus';
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
 
+    static targets = ['q'];
+
     connect() {
         console.log("holaaaa, ¿todo bien?")
     }
 
     search() {
+
+
         clearTimeout(this.timeout)                         // debounce básico :contentReference[oaicite:8]{index=8}
         this.timeout = setTimeout(() => {
             this.element.requestSubmit()                    // envío capturado por Turbo :contentReference[oaicite:9]{index=9}

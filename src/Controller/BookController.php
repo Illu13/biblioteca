@@ -12,15 +12,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\UX\Turbo\TurboBundle;
 
-        #[Route('/book')]
-        final class BookController extends AbstractController
-        {
-            #[Route(name: 'app_book_index', methods: ['GET'])]
-            public function index(BookRepository $bookRepository): Response
-            {
-                return $this->render('book/index.html.twig', [
-                    'books' => $bookRepository->findAll(),
-                ]);
+#[Route('/book')]
+final class BookController extends AbstractController
+{
+    #[Route(name: 'app_book_index', methods: ['GET'])]
+    public function index(BookRepository $bookRepository): Response
+    {
+        return $this->render('book/index.html.twig', [
+            'books' => $bookRepository->findAll(),
+        ]);
     }
 
     #[Route('/allbooks', name: 'app_book_get', methods: ['GET'])]
@@ -28,22 +28,30 @@ use Symfony\UX\Turbo\TurboBundle;
     {
         $q = $request->query->get('q', '');
         $items = $repo->findBySearchTerm($q);
+
+        // Verificar si la solicitud es de Turbo
+        if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+            // Renderizar solo la tabla como Turbo Stream
+            return $this->render('book/searchTable.html.twig', [
+                'books' => $items,
+            ], new Response(null, 200, ['Content-Type' => TurboBundle::STREAM_MEDIA_TYPE]));
+        }
+
+        // Renderizar la página completa
         return $this->render('book/search.html.twig', [
             'books' => $items,
         ]);
     }
 
-    #[Route('/search', name: 'app_book_search', methods: ['GET'])]
+    /*#[Route('/search', name: 'app_book_search', methods: ['GET'])]
     public function searchBooks(Request $request, BookRepository $repo): Response
     {
         $q = $request->query->get('q', '');
         $items = $repo->findBySearchTerm($q);
         $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
         var_dump($items);
-        return $this->render('book/searchTable.html.twig', [
-            'books' => $items,
-        ]);
-    }
+        return $this->redirectToRoute('app_book_get', ['books' => $items]);
+    }*/
 
 
     #[Route('/new/{book?}', name: 'app_book_new', methods: ['GET', 'POST'])]
